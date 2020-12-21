@@ -1,7 +1,7 @@
 import dataset
 
 def backward_segment(text, words):
-    # 逆向最长匹配
+    # 逆向最长匹配，考虑词信息后置情况
     segments = []
     i = len(text) - 1
     while i >= 0:
