@@ -5,7 +5,7 @@ import itertools
 class WordTable(dict):
 
     def __missing__(self, key):
-        pass
+        return 1
 
     def word_logproba(self, word):
         pass
@@ -19,8 +19,8 @@ def load_tencent_words(file=_VOCAB):
     words = set(content.splitlines())
     return words
 
-_FREQ = "dataset/dict.txt"
-def load_freq_words(file=_FREQ, proba=False):
+_DICT = "dataset/dict.txt"
+def load_freq_words(file=_DICT, proba=False):
     # 词频表
     words = {}
     total = 0
@@ -39,10 +39,10 @@ def load_freq_words(file=_FREQ, proba=False):
         words = {i:j/total for i,j in words.items()}
     return words, total
 
-path = "/home/zhiwen/workspace/dataset/THUOCL中文分类词库"
-def load_THUOCL_words(path=path, proba=True):
+_THUOCL = "/home/zhiwen/workspace/dataset/THUOCL中文分类词库/*.txt"
+def load_THUOCL_words(path=_THUOCL, proba=True):
     # THUOCL中文分类词库
-    files = glob.glob(path + "/*.txt")
+    files = glob.glob(path)
     words = collections.defaultdict(int)
     for file in files:
         with open(file, encoding="utf-8") as fd:

@@ -1,8 +1,9 @@
 # self
 dataset/dict.txt
 dataset/Tencent_vocab.txt
+dataset/ctb6_cws
 result.txt
-dict.text
+dict.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

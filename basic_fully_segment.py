@@ -1,7 +1,6 @@
-import dataset
-
 def fully_segment(text, words):
     # 完全切分，常用在搜索引擎或细粒度场景上
+    # 该方法不满足分词的完整性
     segments = []
     size = len(text)
     # 扫描(i<j)，如果在词典中就当做一个词
@@ -13,7 +12,8 @@ def fully_segment(text, words):
     return segments
 
 if __name__ == "__main__":
-    words = dataset.load_words()
+    import dataset
+    words, total = dataset.load_freq_words()
     for text in dataset.load_sentences():
         print(fully_segment(text, words))
 
