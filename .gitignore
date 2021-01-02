@@ -2,6 +2,7 @@
 dataset/dict.txt
 dataset/Tencent_vocab.txt
 dataset/ctb6_cws
+dataset/chinese-现代汉语词表.txt
 result.txt
 dict.txt
 
