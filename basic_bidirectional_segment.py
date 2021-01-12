@@ -1,5 +1,6 @@
 from basic_forward_segment import forward_segment
 from basic_backward_segment import backward_segment
+from base import TokenizerBase
 
 def compute_single_chars(segments):
     # 计算单字符的次数
@@ -18,9 +19,20 @@ def bidirectional_segment(text, words):
     else:
         return segments2
 
+class Tokenizer(TokenizerBase):
+
+    def __init__(self, words):
+        self.words = words
+
+    def find_word(self, sentence):
+        yield from bidirectional_segment(sentence, self.words)
+
+
 if __name__ == "__main__":
     import dataset
     words, total = dataset.load_freq_words()
+    tokenizer = Tokenizer(words)
     for text in dataset.load_sentences():
         print(bidirectional_segment(text, words))
+        print(tokenizer.cut(text))
 

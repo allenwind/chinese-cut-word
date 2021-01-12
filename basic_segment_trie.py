@@ -55,6 +55,9 @@ class TrieTokenizer(TokenizerBase):
             i += 1
         return words
 
+    def backward_segment(self, text):
+        pass
+
 if __name__ == "__main__":
     import dataset
     words, total = dataset.load_freq_words()
