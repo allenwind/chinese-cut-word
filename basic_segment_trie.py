@@ -66,6 +66,21 @@ class Trie(Node):
     def find_prefix(self, key):
         pass
 
+def test_trie():
+    import random
+    import dataset
+    trie = Trie()
+    words = dataset.load_words()
+    words = random.sample(words, k=100)
+    trie.update(words)
+    trie.update(["广东省", "长假", "成绩单"])
+    assert "广东省" in trie
+
+    trie.pop("成绩单")
+    assert "成绩单" not in trie
+
+    assert trie["长假"] is _sentinel
+
 class TrieTokenizer(TokenizerBase):
     """把词图构建在Trie树上，当词表很大时Python的实现比较慢且耗内存"""
 
