@@ -29,7 +29,6 @@
 以上这些方法涉及词的查找、匹配和路径计算，可以配合数据结构Trie树（双数组实现效率更高）、哈希表、使用邻接表的方式存储DAG和AC自动机（Aho and Corasick）优化。其中Trie树复用词的公共前缀，节省内存。以上的基本方法可以进一步派生分词算法或策略，如期望句子切分粒度大一点，那么策略就是分词数最少。
 
 
-
 ## 逐字标注的分词方法
 
 基于逐字标注的分词方法：
@@ -52,6 +51,8 @@
 - 基于逐字标注的方法对歧义词和未登录词的识别比单纯词典匹配的方法更好。
 
 利用好中文中句和段有天然的空格或换行特点切分为互不影响的块。
+
+逐字标注方法对未登录词的召回比词典方法要好。
 
 
 ## 工程实践
@@ -79,3 +80,4 @@
 [2] Chinese word segmentation as character tagging
 [3] eural Architectures for Named Entity Recognition
 [4] https://pyahocorasick.readthedocs.io/en/latest/
+[5] 《统计自然语言处理》

@@ -1,8 +1,10 @@
 import math
 from collections import Counter
 from collections import defaultdict
-from base import TokenizerBase
 import numpy as np
+
+from viterbi import viterbi_decode as _viterbi_decode
+from base import TokenizerBase
 
 import dataset
 words, total = dataset.load_freq_words()
@@ -65,28 +67,6 @@ def get_trans(T=1, log=True):
 
 _log_trans = get_trans(T=2)
 
-def _viterbi_decode(scores, trans, return_score=False):
-    # 使用viterbi算法求最优路径
-    # scores.shape = (seq_len, num_tags)
-    # trans.shape = (num_tags, num_tags)
-    dp = np.zeros_like(scores)
-    backpointers = np.zeros_like(scores, dtype=np.int32)
-    dp[0] = scores[0]
-
-    for t in range(1, scores.shape[0]):
-        v = np.expand_dims(dp[t-1], axis=1) + trans
-        dp[t] = scores[t] + np.max(v, axis=0)
-        backpointers[t] = np.argmax(v, axis=0)
-
-    viterbi = [np.argmax(dp[-1])]
-    for bp in reversed(backpointers[1:]):
-        viterbi.append(bp[viterbi[-1]])
-    viterbi.reverse()
-    if return_score:
-        viterbi_score = np.max(dp[-1])
-        return viterbi, viterbi_score
-    return viterbi
-
 def predict(sentence):
     scores = np.zeros((len(sentence), 4))
     for i, c in enumerate(sentence):
@@ -106,6 +86,7 @@ def hmm_tokenize(sentence):
     return words
 
 class HMMTokenizer(TokenizerBase):
+    """基于HMM逐字标注的分词方法"""
 
     def __init__(self, words, trans, method="viterbi"):
         self.trans = trans
