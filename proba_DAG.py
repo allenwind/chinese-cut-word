@@ -26,7 +26,6 @@ class Tokenizer(TokenizerBase):
                 for j in DAG[i]
             )
 
-        # i = 0
         while i < size:
             j = dp[i][1] + 1
             # 逐词返回
@@ -34,35 +33,17 @@ class Tokenizer(TokenizerBase):
             yield word
             i = j
 
-    # def _create_DAG(self, sentence):
-    #     # 构建等权重DAG词图，使用邻接表的方式存储图
-    #     DAG = collections.defaultdict(list)
-    #     size = len(sentence)
-    #     for i in range(size):
-    #         j = i
-    #         word = sentence[i]
-    #         while j < size and word in self.words:
-    #             if self.words[word]:
-    #                 DAG[i].append(j)
-    #             j += 1
-    #             word = sentence[i:j+1]
-    #         if not DAG[i]:
-    #             DAG[i].append(i)
-    #     return DAG
-
     def create_DAG(self, sentence):
         # 构建等权重DAG词图，使用邻接表的方式存储图
         DAG = collections.defaultdict(list)
         size = len(sentence)
-        i = 0
-        while i < size:
+        for i in range(size):
             for j in range(i, size):
                 word = sentence[i:j+1]
                 if word in self.words and self.words[word]:
                     DAG[i].append(j)
             if not DAG[i]:
                 DAG[i].append(i)
-            i += 1
         return DAG
 
     def word_logproba(self, word):
