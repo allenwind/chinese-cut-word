@@ -145,8 +145,12 @@ class HMMTokenizer(TokenizerBase):
 
 if __name__ == "__main__":
     import dataset
+    import evaluation
     words, total = dataset.load_freq_words()
     tokenizer = HMMTokenizer(words, _log_trans)
     for text in dataset.load_sentences():
         print(hmm_tokenize(text))
         print(tokenizer.cut(text))
+
+    text = dataset.load_human_history()
+    evaluation.check_completeness(tokenizer.cut, text)

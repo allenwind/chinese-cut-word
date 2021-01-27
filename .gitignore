@@ -5,6 +5,9 @@ dataset/ctb6_cws
 dataset/chinese-现代汉语词表.txt
 result.txt
 dict.txt
+*.zip
+*.json
+*.pickle
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

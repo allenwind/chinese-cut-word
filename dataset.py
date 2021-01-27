@@ -2,6 +2,7 @@ import re
 import glob
 import collections
 import itertools
+import numpy as np
 
 class WordTable(dict):
 
@@ -34,7 +35,7 @@ def load_tencent_words(file=_VOCAB):
     return words
 
 _DICT = "dataset/dict.txt"
-def load_freq_words(file=_DICT, proba=False):
+def load_freq_words(file=_DICT, proba=False, prefix=True):
     # 词频表
     words = {}
     total = 0
@@ -46,10 +47,11 @@ def load_freq_words(file=_DICT, proba=False):
         words[word] = freq
         total += freq
         # 前缀字典
-        for i in range(len(word)):
-            sw = word[:i+1]
-            if sw not in words:
-                words[sw] = 0
+        if prefix:
+            for i in range(len(word)):
+                sw = word[:i+1]
+                if sw not in words:
+                    words[sw] = 0
     if proba:
         words = {i:j/total for i,j in words.items()}
     return words, total
@@ -124,7 +126,12 @@ def load_ctb6_cws(path=_CTB6, file="train.txt"):
     # 复用load_icwb2_pku的加载方法
     return load_icwb2_pku(file)
 
-def build_sbme_tags(sentences):
+def to_onehot(y, num_classes=4):
+    categorical = np.zeros((len(y), num_classes))
+    categorical[np.arange(len(y)), y] = 1
+    return categorical
+
+def build_sbme_tags(sentences, onehot=True):
     # 0: s单字词
     # 1: b多字词首字
     # 2: m多字词中间
@@ -135,8 +142,12 @@ def build_sbme_tags(sentences):
         tags = []
         for word in sentence:
             if len(word) == 1:
-                tags.append(o)
+                tags.append(0)
             else:
-                y.extend([1] + [2]*(len(word)-2) + [3])
+                tags.extend([1] + [2]*(len(word)-2) + [3])
+        tags = np.array(tags)
+        if onehot:
+            tags = to_onehot(tags)
         y.append(tags)
+        assert len("".join(sentence)) == len(tags)
     return y
