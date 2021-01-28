@@ -4,68 +4,30 @@ from collections import defaultdict
 import numpy as np
 
 from viterbi import viterbi_decode as _viterbi_decode
+from viterbi import get_trans
 from base import TokenizerBase
 
 import dataset
 words, total = dataset.load_freq_words()
 
+_log_trans = get_trans(T=2, log=True)
+
 def build_hmm_model(words):
     hmm_model = defaultdict(Counter)
     for word, freq in words.items():
         if len(word) == 1:
-            hmm_model["s"][word] += freq
+            hmm_model["S"][word] += freq
         else:
-            hmm_model["b"][word[0]] += freq
-            hmm_model["e"][word[-1]] += freq
+            hmm_model["B"][word[0]] += freq
+            hmm_model["E"][word[-1]] += freq
             for c in word[1:-1]:
-                hmm_model["m"][c] += freq
+                hmm_model["M"][c] += freq
     return hmm_model
 
 hmm_model = build_hmm_model(words)
-tags = "sbme"
+tags = "SBME"
 tags2id = {i:j for j,i in enumerate(tags)}
 log_total = {tag:math.log(sum(hmm_model[tag].values())) for tag in tags}
-
-def trans_humanize(trans):
-    # 把转移矩阵转换为人类可读形式
-    tags = "SBME"
-    htrans = {}
-    for i in range(4):
-        for j in range(4):
-            if trans[i][j] != 0.0:
-                h = tags[i] + tags[j]
-                htrans[h] = trans[i][j]
-    return htrans
-
-def get_trans(T=1, log=True):
-    # 转移矩阵一
-    _trans1 = [[0.3, 0.7, 0.0, 0.0], 
-               [0.0, 0.0, 0.3, 0.7], 
-               [0.0, 0.0, 0.3, 0.7], 
-               [0.3, 0.7, 0.0, 0.0]]
-
-    # 转移矩阵二
-    _trans2 = [[0.514, 0.486, 0.0, 0.0],
-               [0.0, 0.0, 0.400, 0.600],
-               [0.0, 0.0, 0.284, 0.716],
-               [0.446, 0.554, 0.0, 0.0]]
-
-    # 转移矩阵三
-    _trans3 = [[0.300, 0.700, 0.0, 0.0],
-               [0.0, 0.0, 0.400, 0.600],
-               [0.0, 0.0, 0.284, 0.716],
-               [0.446, 0.554, 0.0, 0.0]]
-
-    name = "_trans" + str(T)
-    _trans = locals()[name]
-
-    _trans = np.array(_trans)
-    _trans = np.where(_trans==0, 0.0001, _trans)
-    if log:
-        _trans = np.log(_trans)
-    return _trans
-
-_log_trans = get_trans(T=2)
 
 def predict(sentence):
     scores = np.zeros((len(sentence), 4))
@@ -100,13 +62,13 @@ class HMMTokenizer(TokenizerBase):
         self.model = defaultdict(Counter)
         for word, freq in words.items():
             if len(word) == 1:
-                self.model["s"][word] += freq
+                self.model["S"][word] += freq
             else:
-                self.model["b"][word[0]] += freq
-                self.model["e"][word[-1]] += freq
+                self.model["B"][word[0]] += freq
+                self.model["E"][word[-1]] += freq
                 for c in word[1:-1]:
-                    self.model["m"][c] += freq
-        self.tags = "sbme"
+                    self.model["M"][c] += freq
+        self.tags = "SBME"
         self.tags2id = {i:j for j,i in enumerate(self.tags)}
         self.log_total = {i:math.log(sum(self.model[i].values())) for i in tags}
 
@@ -115,9 +77,9 @@ class HMMTokenizer(TokenizerBase):
         if len(sentence) == 0:
             return
         scores = self.predict(sentence)
-        path = self.decode(scores)
+        tags = self.decode(scores)
         buf = ""
-        for v, c in zip(path, sentence):
+        for v, c in zip(tags, sentence):
             if v in [0, 1]:
                 if buf:
                     yield buf

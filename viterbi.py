@@ -49,6 +49,47 @@ class ViterbiDecoder:
         tags = self.decode(scores)
         yield from segment_by_tags(tags, sentence)
 
+def trans_humanize(trans):
+    # 把转移矩阵转换为人类可读形式
+    tags = "SBME"
+    htrans = {}
+    for i in range(4):
+        for j in range(4):
+            if trans[i][j] != 0.0:
+                h = tags[i] + tags[j]
+                htrans[h] = trans[i][j]
+    return htrans
+
+def get_trans(T=1, log=True):
+    # 转移矩阵一
+    _trans1 = [[0.3, 0.7, 0.0, 0.0], 
+               [0.0, 0.0, 0.3, 0.7], 
+               [0.0, 0.0, 0.3, 0.7], 
+               [0.3, 0.7, 0.0, 0.0]]
+
+    # 转移矩阵二
+    _trans2 = [[0.514, 0.486, 0.0, 0.0],
+               [0.0, 0.0, 0.400, 0.600],
+               [0.0, 0.0, 0.284, 0.716],
+               [0.446, 0.554, 0.0, 0.0]]
+
+    # 转移矩阵三
+    _trans3 = [[0.300, 0.700, 0.0, 0.0],
+               [0.0, 0.0, 0.400, 0.600],
+               [0.0, 0.0, 0.284, 0.716],
+               [0.446, 0.554, 0.0, 0.0]]
+
+    name = "_trans" + str(T)
+    _trans = locals()[name]
+
+    _trans = np.array(_trans)
+    _trans = np.where(_trans==0, 0.0001, _trans)
+    if log:
+        _trans = np.log(_trans)
+    return _trans
+
+_log_trans = get_trans(T=2)
+
 if __name__ == "__main__":
     # testing
     import string
