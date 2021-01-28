@@ -79,6 +79,9 @@ def get_trans(T=1, log=True):
                [0.0, 0.0, 0.284, 0.716],
                [0.446, 0.554, 0.0, 0.0]]
 
+    # 转移矩阵四
+    _trans4 = (np.array(_trans1) + np.array(_trans2)) / 2
+
     name = "_trans" + str(T)
     _trans = locals()[name]
 
@@ -91,18 +94,16 @@ def get_trans(T=1, log=True):
 _log_trans = get_trans(T=2)
 
 if __name__ == "__main__":
-    # testing
+    # 测试
     import string
     # (seq_len, num_classes)
     scores = np.random.uniform(0, 1, size=(20, 4))
-    trans = [[0.3, 0.7, 0.0, 0.0], 
-             [0.0, 0.0, 0.3, 0.7], 
-             [0.0, 0.0, 0.3, 0.7], 
-             [0.3, 0.7, 0.0, 0.0]]
-    tags = viterbi_decode(scores, trans)
+    tags = viterbi_decode(scores, _log_trans)
     print(tags)
     sentence = string.ascii_letters[:20]
     print(list(segment_by_tags(tags, sentence)))
 
-    vd = ViterbiDecoder(trans)
+    vd = ViterbiDecoder(_log_trans)
     print(list(vd.tokenize(sentence, scores)))
+
+    print(trans_humanize(_log_trans))

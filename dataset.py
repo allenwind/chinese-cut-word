@@ -151,3 +151,41 @@ def build_sbme_tags(sentences, onehot=True):
         y.append(tags)
         assert len("".join(sentence)) == len(tags)
     return y
+
+class CharTokenizer:
+    """简单字ID统计Tokenizer"""
+
+    def __init__(self, mintf=5):
+        self.char2id = {}
+        self.MASK = 0
+        self.UNK = 1
+        self.mintf = mintf
+        self.filters = set()
+
+    def fit(self, X):
+        # 建立词ID映射表
+        chars = collections.defaultdict(int)
+        for c in itertools.chain(*X):
+            chars[c] += 1
+
+        # 过滤低频词
+        chars = {i: j for i, j in chars.items() \
+                 if j >= self.mintf and i not in self.filters}
+        # 0:MASK
+        # 1:UNK
+        for i, c in enumerate(chars, start=2):
+            self.char2id[c] = i
+
+    def transform(self, X):
+        # 转成ID序列
+        ids = []
+        for sentence in X:
+            s = []
+            for char in sentence:
+                s.append(self.char2id.get(char, self.UNK))
+            ids.append(s)
+        return ids
+
+    @property
+    def vocab_size(self):
+        return len(self.char2id) + 2

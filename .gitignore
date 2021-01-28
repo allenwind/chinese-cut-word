@@ -8,6 +8,7 @@ dict.txt
 *.zip
 *.json
 *.pickle
+weights/*.weights.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
