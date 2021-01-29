@@ -19,6 +19,7 @@ class Tokenizer(TokenizerBase):
         size = len(sentence)
         dp = {}
         dp[size] = (0, 0)
+        # range(size-1, -1, -1)
         for i in reversed(range(size)):
             # 最大概率的词
             dp[i] = max(
@@ -52,6 +53,7 @@ class Tokenizer(TokenizerBase):
 
 if __name__ == "__main__":
     import dataset
+    import evaluation
     words, total = dataset.load_freq_words()
     # words, total = dataset.load_chinese_words()
     tokenizer = Tokenizer(words, total)
@@ -62,3 +64,5 @@ if __name__ == "__main__":
     text = dataset.load_human_history()
     words = tokenizer.cut(text)
     assert "".join(words) == text
+
+    evaluation.evaluate_speed(tokenizer.cut, text, rounds=5)

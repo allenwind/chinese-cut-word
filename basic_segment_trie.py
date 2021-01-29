@@ -140,8 +140,15 @@ class TrieTokenizer(TokenizerBase):
 
 if __name__ == "__main__":
     import dataset
+    import evaluation
     words, total = dataset.load_freq_words()
     tokenizer = TrieTokenizer(words, fully=False)
     for text in dataset.load_sentences():
         print(tokenizer.cut(text))
 
+    # 测试分词的完整性
+    text = dataset.load_human_history()
+    words = tokenizer.cut(text)
+    assert "".join(words) == text
+
+    evaluation.evaluate_speed(tokenizer.cut, text, rounds=5)

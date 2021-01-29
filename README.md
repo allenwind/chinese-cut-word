@@ -102,4 +102,4 @@
 
 [4] https://pyahocorasick.readthedocs.io/en/latest/
 
-[5] 《统计自然语言处理》
+[5] 《统计自然语言处理（第2版）》

@@ -6,6 +6,12 @@ from viterbi import viterbi_decode as _viterbi_decode
 from viterbi import _log_trans
 from viterbi import segment_by_tags
 
+def sparse2onehot(x):
+    pass
+
+def onehot2sparse(x):
+    pass
+
 class Tokenizer(TokenizerBase):
     """基于深度学习模型训练的分词模型的Tokenizer封装"""
 
