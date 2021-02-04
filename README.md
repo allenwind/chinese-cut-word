@@ -47,7 +47,7 @@
 
 基于逐字标注的分词方法：
 - HMM（viterbi decode）
-- Linear+CRF
+- Linear+[CRF](https://github.com/allenwind/chinese-cut-word/blob/master/crf.py)
 - 逐位置分类模型（softmax）
 - 深度模型+CRF（CNN、RNN、BERT）
 
@@ -98,7 +98,7 @@
 
 [2] Chinese word segmentation as character tagging
 
-[3] eural Architectures for Named Entity Recognition
+[3] neural Architectures for Named Entity Recognition
 
 [4] https://pyahocorasick.readthedocs.io/en/latest/
 
