@@ -9,6 +9,8 @@ dict.txt
 *.json
 *.pickle
 weights/*.weights.*
+weights/checkpoint
+weights/weights.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

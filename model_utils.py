@@ -30,6 +30,9 @@ class Tokenizer(TokenizerBase):
             trans = _log_trans
         self.trans = trans
 
+    def model_predict(self, x):
+        return self.model.predict(x)
+
     def find_word(self, sentence):
         size = len(sentence)
         ids = self.tokenizer.transform([sentence])    
@@ -41,7 +44,7 @@ class Tokenizer(TokenizerBase):
             truncating="post",
             value=0
         )
-        scores = self.model.predict(padded_ids)[0][:size]
+        scores = self.model_predict(padded_ids)[0][:size]
         tags = self.decode(scores) # 最优或局部最优标签序列
         yield from segment_by_tags(tags, sentence)
 
@@ -51,6 +54,16 @@ class Tokenizer(TokenizerBase):
 
     def greedy_decode(self, scores):
         return np.argmax(scores, axis=1).tolist()
+
+class CRFBasedTokenizer(Tokenizer):
+
+    def __init__(self, model, tokenizer, maxlen):
+        super().__init__(model, tokenizer, maxlen)
+        self.decode = lambda x: x
+
+    def model_predict(self, x):
+        tags, *_ = self.model.predict(x)
+        return tags
 
 class Evaluator(tf.keras.callbacks.Callback):
 
