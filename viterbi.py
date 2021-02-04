@@ -60,6 +60,16 @@ def trans_humanize(trans):
                 htrans[h] = trans[i][j]
     return htrans
 
+def trans2matrix(trans):
+    # 转移矩阵的可读形式转化为矩阵形式
+    matrix = np.zeros((4, 4))
+    for i, s1 in enumerate("SBME"):
+        for j, s2 in enumerate("SBME"):
+            s = (s1 + s2)
+            if s in trans:
+                matrix[i][j] = trans[s]
+    return matrix
+
 def get_trans(T=1, log=True):
     # 转移矩阵一
     _trans1 = [[0.3, 0.7, 0.0, 0.0], 
@@ -81,6 +91,11 @@ def get_trans(T=1, log=True):
 
     # 转移矩阵四
     _trans4 = (np.array(_trans1) + np.array(_trans2)) / 2
+
+    _trans5 = [[0.514, 0.486, 0.0, 0.0],
+               [0.0, 0.0, 0.138, 0.862],
+               [0.0, 0.0, 0.298, 0.702],
+               [0.446, 0.554, 0.0, 0.0]]
 
     name = "_trans" + str(T)
     _trans = locals()[name]
