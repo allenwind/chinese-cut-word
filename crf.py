@@ -23,6 +23,10 @@ class CRF(tf.keras.layers.Layer):
 
     def call(self, inputs, mask=None):
         # 必须要有相应的mask传入
+        # 传入方法：
+        # 1.手动传入
+        # 2.设置Masking层
+        # 3.Embedding层设置mask_zero=True
         assert mask is not None
         lengths = tf.reduce_sum(tf.cast(mask, tf.int32), axis=-1)
         viterbi_tags, _ = tfa.text.crf_decode(inputs, self.trans, lengths)
@@ -30,7 +34,7 @@ class CRF(tf.keras.layers.Layer):
         return viterbi_tags, inputs, lengths, self.trans
 
 class ModelWithCRFLoss(tf.keras.Model):
-    """把CRFloss包装成模型"""
+    """把CRFloss包装成模型，这种写法容易扩展不同的loss"""
 
     def __init__(self, base, **kwargs):
         super(ModelWithCRFLoss, self).__init__(**kwargs)
