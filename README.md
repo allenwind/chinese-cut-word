@@ -86,9 +86,11 @@
 
 
 
-## 应用
+## 其他
 
 以上分词算法的并行化方案可参看[count-in-parallel](https://github.com/allenwind/count-in-parallel)。
+
+同是序列标注问题，NER可参看 https://github.com/allenwind/tensorflow-crf 。
 
 
 

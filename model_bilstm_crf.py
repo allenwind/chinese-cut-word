@@ -67,7 +67,9 @@ x = Embedding(input_dim=vocab_size, output_dim=hdims)(inputs)
 x = MaskBiLSTM(hdims)(x, mask=mask)
 x = Dense(hdims)(x)
 x = Dense(num_classes)(x)
-crf = CRF()
+# CRF需要mask来完成不定长序列的处理，这里是手动传入
+# 可以设置Embedding参数mask_zero=True，避免手动传入
+crf = CRF(trans_initializer="orthogonal")
 outputs = crf(x, mask=mask)
 
 base = Model(inputs=inputs, outputs=outputs)
