@@ -51,9 +51,6 @@ tokenizer.fit(X_train)
 maxlen = 128
 hdims = 128
 num_classes = 4
-batch_size = 32
-epochs = 5
-file = "weights/weights.bilstm.crf"
 vocab_size = tokenizer.vocab_size
 
 X_train, y_train = preprocess_dataset(X_train, y_train, maxlen, tokenizer)
@@ -73,16 +70,19 @@ crf = CRF(trans_initializer="orthogonal")
 outputs = crf(x, mask=mask)
 
 base = Model(inputs=inputs, outputs=outputs)
-base.summary()
 
 model = ModelWithCRFLoss(base)
+model.summary()
 model.compile(optimizer="adam")
 
+batch_size = 32
+epochs = 5
+file = "weights/weights.bilstm.crf"
 model.fit(
     X_train,
     y_train,
     batch_size=batch_size,
-    epochs=10,
+    epochs=epochs,
     validation_data=(X_val, y_val)
 )
 

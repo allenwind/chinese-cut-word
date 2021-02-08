@@ -62,7 +62,7 @@ class CRFBasedTokenizer(Tokenizer):
         self.decode = lambda x: x
 
     def model_predict(self, x):
-        tags, *_ = self.model.predict(x)
+        tags = self.model.predict(x)
         return tags
 
 class Evaluator(tf.keras.callbacks.Callback):

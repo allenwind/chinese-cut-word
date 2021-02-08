@@ -35,8 +35,7 @@ def create_DAG(sentence, words):
         i += 1
     return DAG
 
-def dijkstra(D, start=None, end=None):
-    # https://zhuanlan.zhihu.com/p/129373740
+def __create_DAG(D, start=None, end=None):
     size = len(sentence)
     dp = {}
     dp[size] = (0, 0)

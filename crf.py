@@ -44,6 +44,9 @@ class ModelWithCRFLoss(tf.keras.Model):
     def call(self, inputs):
         return self.base(inputs)
 
+    def summary(self):
+        self.base.summary()
+
     def train_step(self, data):
         x, y, sample_weight = tf.keras.utils.unpack_x_y_sample_weight(data)
         with tf.GradientTape() as tape:
@@ -66,6 +69,11 @@ class ModelWithCRFLoss(tf.keras.Model):
         self.accuracy_fn.update_state(y, viterbi_tags, mask)
         results = {"crf_loss": crf_loss, "accuracy": self.accuracy_fn.result()}
         return results
+
+    def predict_step(self, data):
+        x, *_ = tf.keras.utils.unpack_x_y_sample_weight(data)
+        viterbi_tags, *_ = self(x, training=False)
+        return viterbi_tags
 
     def compute_loss(self, x, y, sample_weight, training):
         viterbi_tags, potentials, lengths, trans = self(x, training=training)
