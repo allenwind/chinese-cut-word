@@ -7,46 +7,6 @@ from viterbi import viterbi_decode as _viterbi_decode
 from viterbi import get_trans
 from base import TokenizerBase
 
-import dataset
-words, total = dataset.load_freq_words()
-
-_log_trans = get_trans(T=2, log=True)
-
-def build_hmm_model(words):
-    hmm_model = defaultdict(Counter)
-    for word, freq in words.items():
-        if len(word) == 1:
-            hmm_model["S"][word] += freq
-        else:
-            hmm_model["B"][word[0]] += freq
-            hmm_model["E"][word[-1]] += freq
-            for c in word[1:-1]:
-                hmm_model["M"][c] += freq
-    return hmm_model
-
-hmm_model = build_hmm_model(words)
-tags = "SBME"
-tags2id = {i:j for j,i in enumerate(tags)}
-log_total = {tag:math.log(sum(hmm_model[tag].values())) for tag in tags}
-
-def predict(sentence):
-    scores = np.zeros((len(sentence), 4))
-    for i, c in enumerate(sentence):
-        for j, k in hmm_model.items():
-            scores[i][tags2id[j]] = math.log(k[c]+1) - log_total[j]
-    return scores
-
-def hmm_tokenize(sentence):
-    scores = predict(sentence)
-    viterbi = _viterbi_decode(scores, _log_trans)
-    words = [sentence[0]]
-    for i in range(1, len(sentence)):
-        if viterbi[i] in [0, 1]:
-            words.append(sentence[i])
-        else:
-            words[-1] += sentence[i]
-    return words
-
 class HMMTokenizer(TokenizerBase):
     """基于HMM逐字标注的分词方法"""
 
@@ -70,7 +30,7 @@ class HMMTokenizer(TokenizerBase):
                     self.model["M"][c] += freq
         self.tags = "SBME"
         self.tags2id = {i:j for j,i in enumerate(self.tags)}
-        self.log_total = {i:math.log(sum(self.model[i].values())) for i in tags}
+        self.log_total = {i:math.log(sum(self.model[i].values())) for i in self.tags}
 
     def find_word(self, sentence):
         # 根据最优路径进行分词
@@ -109,9 +69,11 @@ if __name__ == "__main__":
     import dataset
     import evaluation
     words, total = dataset.load_freq_words()
+    _log_trans = get_trans(T=2, log=True)
+
     tokenizer = HMMTokenizer(words, _log_trans)
     for text in dataset.load_sentences():
-        print(hmm_tokenize(text))
+        # print(hmm_tokenize(text))
         print(tokenizer.cut(text))
 
     text = dataset.load_human_history()
