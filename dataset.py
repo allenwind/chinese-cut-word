@@ -128,8 +128,9 @@ def load_ctb6_cws(path=_CTB6, file="train.txt"):
     return load_icwb2_pku(file)
 
 _PEOPLE = "/home/zhiwen/desktop/people2014_cws/**/*.txt"
-def load_people2014_cwd(file=_PEOPLE):
+def load_people2014_cws(file=_PEOPLE):
     files = glob.glob()
+    # TODO
 
 def to_onehot(y, num_classes=4):
     categorical = np.zeros((len(y), num_classes))
