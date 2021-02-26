@@ -8,24 +8,7 @@ from base import TokenizerBase
 
 # HMM的实现，支持参数训练
 
-def find_words(text, tags):
-    # 通过SBME序列对text分词
-    def segment_by_tags(text, tags):
-        buf = ""
-        for tag, char in zip(tags, text):
-            # t is S or B
-            if tag in ["S", "B"]:
-                if buf:
-                    yield buf
-                buf = char
-            # t is M or E
-            else:
-                buf += char
-        if buf:
-            yield buf
-    return list(segment_by_tags(text, tags))
-
-class HiddenMarkovChain(TokenizerBase):
+class HiddenMarkovChain:
     
     def __init__(self):
         # 标签集
@@ -69,24 +52,6 @@ class HiddenMarkovChain(TokenizerBase):
             batch_scores.append(scores)
         return batch_scores
 
-    def find_word(self, sentence):
-        scores = self.predict([sentence])[0]
-        log_trans = np.log(np.where(self.A==0, 0.0001, self.A))
-        viterbi = self.viterbi_decode(scores, log_trans)
-        tags = [self.id2tags[i] for i in viterbi]
-        buf = ""
-        for tag, char in zip(tags, sentence):
-            # t is S or B
-            if tag in ["S", "B"]:
-                if buf:
-                    yield buf
-                buf = char
-            # t is M or E
-            else:
-                buf += char
-        if buf:
-            yield buf
-
     def viterbi_decode(self, scores, trans, return_score=False):
         # 使用viterbi算法求最优路径
         # scores.shape = (seq_len, num_tags)
@@ -108,9 +73,38 @@ class HiddenMarkovChain(TokenizerBase):
             return viterbi, viterbi_score
         return viterbi
 
+class HMMTokenizer(TokenizerBase, HiddenMarkovChain):
+
+    def find_word(self, sentence):
+        scores = self.predict([sentence])[0]
+        log_trans = np.log(np.where(self.A==0, 0.0001, self.A))
+        viterbi = self.viterbi_decode(scores, log_trans)
+        tags = [self.id2tags[i] for i in viterbi]
+        buf = ""
+        for tag, char in zip(tags, sentence):
+            # t is S or B
+            if tag in ["S", "B"]:
+                if buf:
+                    yield buf
+                buf = char
+            # t is M or E
+            else:
+                buf += char
+        if buf:
+            yield buf
+
 PATH_CTB6 = "dataset/ctb6_cws/{}.txt"
 def load_cws_ctb6(file, shuffle=True, with_labels=False):
-    assert file in ("train", "dev", "test")
+    assert file in ("train", "dev", "test", "all")
+    if file == "all":
+        X = []
+        y = []
+        for file in ("train", "dev", "test"):
+            X1, y1 = load_cws_ctb6(file)
+            X.extend(X1)
+            y.extend(y1)
+        return X, y
+
     file = PATH_CTB6.format(file)
     with open(file, "r") as fp:
         text = fp.read()
@@ -141,9 +135,9 @@ def load_cws_ctb6(file, shuffle=True, with_labels=False):
 if __name__ == "__main__":
     import dataset
 
-    model = HiddenMarkovChain()
-    X, y = load_cws_ctb6("train")
-    model.fit(X, y)
+    tokenizer = HMMTokenizer()
+    X, y = load_cws_ctb6("all")
+    tokenizer.fit(X, y)
 
     for text in dataset.load_sentences():
-        print(model.cut(text))
+        print(tokenizer.cut(text))
