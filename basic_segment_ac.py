@@ -12,8 +12,7 @@ class AutomatonTokenizer(TokenizerBase):
         self.am = ahocorasick.Automaton()
         logtotal = math.log(sum(words.values()))
         for word, proba in words.items():
-            # bug?
-            logproba = (math.log(proba) if proba > 0 else 0) - logtotal
+            logproba = (math.log(proba) if proba > 0 else -1e6) - logtotal
             self.am.add_word(word, (word, logproba))
         self.am.make_automaton()
         self.algorithm = algorithm
@@ -76,7 +75,7 @@ class AutomatonTokenizer(TokenizerBase):
 if __name__ == "__main__":
     import dataset
     import evaluation
-    words, total = dataset.load_freq_words(proba=True)
+    words, total = dataset.load_freq_words(proba=True, prefix=False)
     tokenizer = AutomatonTokenizer(words, algorithm="forward_segment")
     for text in dataset.load_sentences():
         print(tokenizer.cut(text))

@@ -34,6 +34,11 @@ class Tokenizer(TokenizerBase):
             yield word
             i = j
 
+    def find_word2(self, sentence):
+        DAG = self.create_DAG(sentence)
+        size = len(sentence)
+        
+
     def create_DAG(self, sentence):
         # 构建等权重DAG词图，使用邻接表的方式存储图
         DAG = collections.defaultdict(list)

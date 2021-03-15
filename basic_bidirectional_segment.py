@@ -6,6 +6,15 @@ def compute_single_chars(segments):
     # 计算单字符的次数
     return sum(1 for word in segments if len(word) == 1)
 
+def compute_words(segments, words):
+    return len(segments)
+
+def compute_probability(segments, words):
+    p = 0
+    for segment in segments:
+        p += words.get(segment, 1)
+    return p
+
 def bidirectional_segment(text, words):
     # 双向最长匹配
     segments1 = forward_segment(text, words)
@@ -19,6 +28,16 @@ def bidirectional_segment(text, words):
     else:
         return segments2
 
+def bidirectional_segment2(text, words):
+    # 双向最长匹配
+    segments1 = forward_segment(text, words)
+    segments2 = backward_segment(text, words)
+    p1 = compute_probability(segments1, words)
+    p2 = compute_probability(segments2, words)
+    if p1 > p2:
+        return segments1
+    return segments2
+
 class Tokenizer(TokenizerBase):
 
     def __init__(self, words):
@@ -26,7 +45,6 @@ class Tokenizer(TokenizerBase):
 
     def find_word(self, sentence):
         yield from bidirectional_segment(sentence, self.words)
-
 
 if __name__ == "__main__":
     import dataset

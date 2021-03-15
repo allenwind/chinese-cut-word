@@ -1,5 +1,7 @@
 import re
 
+# TODO超长文本的并行分词扩展
+
 class TokenizerBase:
     """分词的基类，继承该类并在find_word实现分词的核心算法"""
 

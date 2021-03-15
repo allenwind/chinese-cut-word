@@ -13,6 +13,21 @@ def fully_segment(text, words):
                 segments.append(word)
     return segments
 
+def restrict_fully_segment(text, words, n=4):
+    # 完全切分，常用在搜索引擎或细粒度场景上
+    # 该方法不满足分词的完整性
+    segments = []
+    size = len(text)
+    # 扫描(i<j)，如果在词典中就当做一个词
+    for i in range(size): 
+        for j in range(i+1, size+1):
+            if j - i > n:
+                break
+            word = text[i:j]
+            if word in words:
+                segments.append(word)
+    return segments
+
 class Tokenizer(TokenizerBase):
 
     def __init__(self, words):
